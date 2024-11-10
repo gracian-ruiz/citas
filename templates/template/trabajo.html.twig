@@ -1,0 +1,33 @@
+
+{% extends 'frontend.html.twig' %}
+{% block title %}Ejemplo layout{% endblock %}
+{% block body %}
+<h2>Hola estoy desde la plantilla</h2>
+
+<h1>aqui estamos trabajando {{name}} {{lastName}}</h1>
+{% set edad=28 %}
+<p> {{edad}} </p>
+<p>
+{% if edad >= 38 %}
+    es mayor de edad
+{% else %} 
+menor
+{% endif %}  
+</p>
+<h1>Members</h1>
+<ul>
+    {% for pais in paises %}
+        <li>{{ pais.nombre}}{{ pais.id }}</li>
+    {% endfor %}
+</ul>
+<p> {{dump(paises)}} </p>
+
+<p>{{include('include.html.twig')}}</p>
+
+<p>{% set html = '<b>hol soy un texto en negrita</b>' %}  </p>
+<p> {{html}} </p>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Validación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-light">
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px;">
+        <h1 class="text-center mb-4">Formulario de Validación</h1>
+        
+        <!-- Contenedor para mensajes -->
+        <div id="form-messages"></div>
+
+        <form id="validationForm" method="POST" action="{{ path('formularios_validacion') }}">
+            <div class="mb-3">
+                <label for="form_nombre" class="form-label">Nombre</label>
+                {{ form_widget(form.nombre, {"required": true, "attr": {"class": "form-control", "placeholder": "Ingrese su nombre"}}) }}
+            </div>
+            <div class="mb-3">
+                <label for="form_dni" class="form-label">DNI</label>
+                {{ form_widget(form.dni, {"required": true, "attr": {"class": "form-control", "placeholder": "Ingrese su DNI"}}) }}
+            </div>
+            <div class="mb-3">
+                <label for="form_telefono" class="form-label">Teléfono</label>
+                {{ form_widget(form.telefono, {"required": true, "attr": {"class": "form-control", "placeholder": "Ingrese su teléfono"}}) }}
+            </div>
+            <div class="mb-3">
+              <label for="form_correo" class="form-label">Correo</label>
+              <input type="text" id="persona_validation_email" name="persona_validation[email]" required="required" placeholder="Ingrese su correo electrónico" class="form-control">
+           </div>
+            <div class="mb-3">
+                <label for="form_tipoCita" class="form-label">Tipo de Cita</label>
+                {{ form_widget(form.tipoCita, {"required": true, "attr": {"class": "form-control"}}) }}
+            </div>
+            
+            <hr>
+            
+            {{ form_widget(form._token) }}
+            
+            <button type="submit" class="btn btn-primary w-100" title="Enviar">
+                <i class="fas fa-check"></i> Enviar
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+<script>
+  document.getElementById('validationForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+  
+      const form = event.target;
+      const emailInput = form.querySelector('[name="persona_validation[email]"]');  // Asegúrate de usar el nombre correcto
+      const formMessages = document.getElementById('form-messages');
+  
+      // Validar correo electrónico
+      if (!validarCorreo(emailInput.value)) {
+          formMessages.innerHTML = '<div class="alert alert-danger">El correo electrónico ingresado no es válido. Por favor, ingresa un correo válido.</div>';
+          return; // No enviar el formulario si el correo es inválido
+      }
+  
+      // Si el correo es válido, proceder con el envío
+      const formData = new FormData(form);
+  
+      fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Accept': 'application/json',  // Esperamos respuesta en JSON
+          },
+      })
+      .then(response => response.json())  // Intentamos convertir la respuesta en JSON
+      .then(data => {
+          console.log(data);
+          formMessages.innerHTML = ''; // Limpiar mensajes anteriores
+  
+          if (data.estado === 'ok') {
+              // Si la respuesta es 'ok', mostramos el mensaje de éxito
+              formMessages.innerHTML = '<div class="alert alert-success">' + data.mensaje + '</div>';
+              
+              // Mostrar los detalles de la cita
+              formMessages.innerHTML += `<div class="alert alert-info">
+                  <strong>Fecha y hora de la cita:</strong> ${data.fechaHoraCita}<br>
+                  <strong>Tipo de cita:</strong> ${data.tipoCita}
+              </div>`;
+  
+              form.reset(); // Limpiar el formulario después de enviarlo
+          } else if (data.estado === 'error' && data.mensaje) {
+              // Si la respuesta es 'error' y contiene un mensaje (como cuando ya tiene una cita pendiente)
+              formMessages.innerHTML = '<div class="alert alert-danger">' + data.mensaje + '</div>';
+          }
+      })
+      .catch(error => {
+          console.error('Error al enviar el formulario:', error);
+          formMessages.innerHTML = '<div class="alert alert-danger">Hubo un error al enviar el formulario. Por favor, inténtelo de nuevo más tarde.</div>';
+      });
+  });
+  
+  // Función para validar el correo electrónico
+  function validarCorreo(correo) {
+      const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      return regex.test(correo);  // Devuelve true si el correo es válido, false si no lo es
+  }
+  </script>
+  
+</body>
+</html>

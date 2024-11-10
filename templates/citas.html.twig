@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Citas</title>
+
+    <!-- Incluir CSS de DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Panel de Citas</h1>
+
+    <!-- Barra de búsqueda -->
+    <input class="form-control" type="text" id="searchBox" placeholder="Buscar en la tabla">
+
+    <!-- Tabla de citas -->
+    <table id="citasTable" class="display">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>DNI</th>
+                <th>Tipo de cita</th>
+                <th>Fecha y Hora de Cita</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+                <tr>
+                    <td>{{ cita.id }}</td>
+                    <td>{{ cita.nombre }}</td>
+                    <td>{{ cita.email }}</td>
+                    <td>{{ cita.telefono }}</td>
+                    <td>{{ cita.dni }}</td>
+                    <td>{{ cita.tipoCita }}</td>
+                    <td>{{ cita.fechaHoraCita ? cita.fechaHoraCita|date('Y-m-d H:i') : 'No asignada' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Incluir jQuery y DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        // Inicializar el DataTable
+        $(document).ready(function() {
+            var table = $('#citasTable').DataTable({
+                // Opciones de DataTable
+                language: {
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros por página",
+                    zeroRecords: "No se encontraron resultados",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                    infoFiltered: "(filtrado de _MAX_ registros totales)"
+                }
+            });
+
+            // Filtro en la barra de búsqueda
+            $('#searchBox').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+        });
+    </script>
+</body>
+</html>
