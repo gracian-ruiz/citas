@@ -167,7 +167,7 @@ class FormulariosController extends AbstractController
     }
 
     private array $festivos = [
-        '2024-11-12', // Ejemplo de festivo (Navidad)
+        '2024-12-11', // Ejemplo de festivo (Navidad)
         '2024-01-01', // Año Nuevo
         // Agregar más fechas festivas según sea necesario
     ];
